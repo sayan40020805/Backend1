@@ -28,9 +28,10 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('Connected to MongoDB');
+  console.log('✅ Connected to MongoDB successfully');
 }).catch((err) => {
-  console.error('MongoDB connection error:', err);
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
 });
 
 // Routes
@@ -39,26 +40,26 @@ app.use('/api/polls', pollRoutes);
 
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
-  console.log('a user connected:', socket.id);
+  console.log('User connected:', socket.id);
 
   socket.on('vote', (pollId) => {
     io.emit('voteUpdate', pollId);
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected:', socket.id);
+    console.log('User disconnected:', socket.id);
   });
 });
 
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
 // Handle server errors, particularly port conflicts
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use. Please choose a different port or kill the process using it.`);
+    console.error(`❌ Port ${PORT} is already in use. Please choose a different port or kill the process using it.`);
     process.exit(1);
   } else {
     console.error('Server error:', err);

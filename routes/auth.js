@@ -34,18 +34,13 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for:', email);
     const user = await User.findOne({ email });
-    console.log('User found:', !!user);
     if (!user || !(await user.comparePassword(password))) {
-      console.log('Invalid credentials');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    console.log('Login successful, token generated');
     res.json({ user: { id: user._id, username: user.username, email }, token });
   } catch (error) {
-    console.log('Login error:', error.message);
     res.status(400).json({ message: error.message });
   }
 });

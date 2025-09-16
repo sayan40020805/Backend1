@@ -1,6 +1,7 @@
-# TODO List for Fixing Port Conflict and Improving Server
+# TODO List for Cleaning Files and Verifying Server
 
-- [x] Add error handling in server.js for port conflicts (EADDRINUSE)
-- [x] Add delete route for polls to complete CRUD
-- [x] Test starting the server with npm start
-- [x] Test CRUD operations
+- [x] Clean server.js: Remove unnecessary code, add clear console logs for port and MongoDB status
+- [x] Clean routes/auth.js: Remove unnecessary console.log statements
+- [x] Clean middleware/auth.js: Remove unnecessary console.log statements
+- [x] Test server startup and MongoDB connection
+- [x] Verify server runs on port 5000 and MongoDB connects successfully
