@@ -18,6 +18,11 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+if (!process.env.MONGO_URI) {
+  console.error('MONGO_URI environment variable is not set');
+  process.exit(1);
+}
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -48,6 +53,16 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Handle server errors, particularly port conflicts
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please choose a different port or kill the process using it.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+  }
 });
 
 module.exports = { app, io };
