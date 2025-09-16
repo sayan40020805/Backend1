@@ -77,4 +77,21 @@ router.post('/:id/vote', auth, async (req, res) => {
   }
 });
 
+// Delete poll
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const poll = await Poll.findById(req.params.id);
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+    if (poll.creator.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this poll' });
+    }
+    await Poll.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Poll deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
