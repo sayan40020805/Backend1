@@ -4,8 +4,8 @@ const http = require('http');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { Server } = require('socket.io');
-const authRoutes = require('./routes/auth');
-const pollRoutes = require('./routes/polls');
+const authRoutes = require('../routes/auth');
+const pollRoutes = require('../routes/polls');
 
 const app = express();
 const server = http.createServer(app);

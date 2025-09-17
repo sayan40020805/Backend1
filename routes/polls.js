@@ -68,7 +68,7 @@ router.post('/:id/vote', auth, async (req, res) => {
     await poll.save();
 
     // Emit real-time update
-    const { io } = require('../server');
+    const { io } = require('../src/server');
     io.emit('voteUpdate', req.params.id);
 
     res.json(poll);
