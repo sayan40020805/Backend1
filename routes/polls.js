@@ -76,6 +76,42 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// Update poll (e.g., make public)
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const { isPublic } = req.body;
+    const poll = await Poll.findById(req.params.id);
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+    if (poll.creator.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    poll.isPublic = isPublic;
+    await poll.save();
+    res.json(poll);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Get share URL for poll
+router.get('/:id/share', auth, async (req, res) => {
+  try {
+    const poll = await Poll.findById(req.params.id);
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+    if (poll.creator.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    const shareUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/poll/${poll.slug}`;
+    res.json({ shareUrl });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get public poll by slug
 router.get('/public/:slug', async (req, res) => {
   try {
