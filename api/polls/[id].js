@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const Poll = require('../../models/Poll');
 const User = require('../../models/User');
@@ -39,19 +38,13 @@ module.exports = async (req, res) => {
   Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
 
   try {
-    // Connect to MongoDB if not connected
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    }
+    
 
     const { id } = req.query;
 
     if (req.method === 'GET') {
       // Get poll by id
-      const poll = await Poll.findById(id).populate('creator', 'username').populate('voters.user', 'username');
+      const poll = Poll.findById(id);
       if (!poll) {
         return res.status(404).json({ message: 'Poll not found' });
       }
@@ -61,14 +54,14 @@ module.exports = async (req, res) => {
       const user = await auth(req);
       req.user = user;
 
-      const poll = await Poll.findById(id);
+      const poll = Poll.findById(id);
       if (!poll) {
         return res.status(404).json({ message: 'Poll not found' });
       }
-      if (poll.creator.toString() !== req.user._id.toString()) {
+      if (poll.creator !== req.user.id) {
         return res.status(403).json({ message: 'Not authorized to delete this poll' });
       }
-      await Poll.findByIdAndDelete(id);
+      Poll.polls = Poll.polls.filter(p => p.id !== id);
       res.json({ message: 'Poll deleted' });
     } else {
       res.setHeader('Allow', 'GET, DELETE');

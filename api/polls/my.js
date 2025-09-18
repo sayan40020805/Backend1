@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const Poll = require('../../models/Poll');
 const User = require('../../models/User');
@@ -46,19 +45,13 @@ module.exports = async (req, res) => {
   Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
 
   try {
-    // Connect to MongoDB if not connected
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    }
+
 
     // Authenticate user
     const user = await auth(req);
     req.user = user;
 
-    const polls = await Poll.find({ creator: req.user._id }).populate('creator', 'username');
+    const polls = Poll.find({ creator: req.user.id });
     res.json(polls);
   } catch (error) {
     if (error.message === 'Please authenticate') {

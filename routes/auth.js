@@ -21,10 +21,10 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
 
-    const user = new User({ username, email, password });
+    const user = new User(username, email, password);
     await user.save();
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.status(201).json({ user: { id: user._id, username, email }, token });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    res.status(201).json({ user: { id: user.id, username, email }, token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -38,8 +38,8 @@ router.post('/login', async (req, res) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ user: { id: user._id, username: user.username, email }, token });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    res.json({ user: { id: user.id, username: user.username, email }, token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

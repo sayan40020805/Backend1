@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const mongoose = require('mongoose');
+/* Removed mongoose import and connection to remove local MongoDB */
 const { Server } = require('socket.io');
 const authRoutes = require('../routes/auth');
 const pollRoutes = require('../routes/polls');
@@ -19,21 +19,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-if (!process.env.MONGO_URI) {
-  console.error('MONGO_URI environment variable is not set');
-  process.exit(1);
-}
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('✅ Connected to MongoDB successfully');
-}).catch((err) => {
-  console.error('❌ MongoDB connection error:', err);
-  process.exit(1);
-});
 
 // Routes
 app.use('/api/auth', authRoutes);

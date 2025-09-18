@@ -1,21 +1,22 @@
-# TODO: Fix MongoDB Connection for Render Deployment
+# TODO: Remove Local MongoDB from Backend
 
-- [x] Edit test-db.js to remove fallback hardcoded MongoDB Atlas URI and require MONGO_URI environment variable only
-- [x] Update .env.example to add placeholder for MONGO_URI environment variable with example MongoDB Atlas connection string
-- [x] Confirm src/server.js is correctly using process.env.MONGO_URI for connection
-- [x] Provide instructions to set MONGO_URI environment variable on Render dashboard
-- [x] Add note in TODO.md about environment variable setup
+## Completed
+- [x] Analyze project structure and MongoDB usage
+- [x] Create plan for removal
+- [x] Remove mongoose from package.json
+- [x] Update models/User.js to use in-memory storage
+- [x] Update models/Poll.js to use in-memory storage
+- [x] Remove MongoDB connection from src/server.js
+- [x] Remove MongoDB connection from test-db.js
+- [x] Update api/auth/signup.js to remove connection and use new models
+- [x] Update api/auth/login.js to remove connection and use new models
+- [x] Update api/polls/index.js to remove connection and use new models
+- [x] Update api/polls/my.js to remove connection and use new models
+- [x] Update api/polls/[id].js to remove connection and use new models
+- [x] Update api/polls/[id]/vote.js to remove connection and use new models
+- [x] Update routes/auth.js to use new models
+- [x] Update routes/polls.js to use new models
 
-## Instructions to set MONGO_URI environment variable on Render
-
-1. Go to your Render Dashboard.
-2. Select your backend service.
-3. Navigate to the "Environment" tab.
-4. Click "Add Environment Variable".
-5. Set the key as `MONGO_URI`.
-6. Set the value to your MongoDB Atlas connection string, e.g.:
-   `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/<dbname>?retryWrites=true&w=majority`
-7. Save the changes.
-8. Redeploy your Render service to apply the new environment variable.
-
-This will ensure your backend connects to the remote MongoDB instance instead of localhost.
+## Followup
+- [ ] Run npm install
+- [ ] Test the backend

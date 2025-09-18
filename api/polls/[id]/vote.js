@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const Poll = require('../../../models/Poll');
 const User = require('../../../models/User');
@@ -46,13 +45,7 @@ module.exports = async (req, res) => {
   Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
 
   try {
-    // Connect to MongoDB if not connected
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    }
+
 
     // Authenticate user
     const user = await auth(req);
@@ -60,24 +53,10 @@ module.exports = async (req, res) => {
 
     const { id } = req.query;
     const { optionIndex } = req.body;
-    const poll = await Poll.findById(id);
+    const poll = Poll.updateVotes(id, optionIndex, req.user.id);
     if (!poll) {
       return res.status(404).json({ message: 'Poll not found' });
     }
-
-    // Check if user already voted
-    const alreadyVoted = poll.voters.some(voter => voter.user && voter.user.toString() === req.user._id.toString());
-    if (alreadyVoted) {
-      return res.status(400).json({ message: 'You have already voted' });
-    }
-
-    // Increment vote
-    poll.options[optionIndex].votes += 1;
-
-    // Record voter
-    poll.voters.push({ user: req.user._id, optionIndex });
-
-    await poll.save();
 
     // Note: Socket.io removed, no real-time update
 

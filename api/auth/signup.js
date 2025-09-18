@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 
@@ -30,13 +29,7 @@ module.exports = async (req, res) => {
   Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
 
   try {
-    // Connect to MongoDB if not connected
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    }
+
 
     const { username, email, password } = req.body;
 
@@ -52,10 +45,10 @@ module.exports = async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
 
-    const user = new User({ username, email, password });
+    const user = new User(username, email, password);
     await user.save();
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.status(201).json({ user: { id: user._id, username, email }, token });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    res.status(201).json({ user: { id: user.id, username, email }, token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
