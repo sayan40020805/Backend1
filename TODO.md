@@ -1,22 +1,12 @@
-# TODO: Remove Local MongoDB from Backend
+# MongoDB Setup and Connection Check
 
-## Completed
-- [x] Analyze project structure and MongoDB usage
-- [x] Create plan for removal
-- [x] Remove mongoose from package.json
-- [x] Update models/User.js to use in-memory storage
-- [x] Update models/Poll.js to use in-memory storage
-- [x] Remove MongoDB connection from src/server.js
-- [x] Remove MongoDB connection from test-db.js
-- [x] Update api/auth/signup.js to remove connection and use new models
-- [x] Update api/auth/login.js to remove connection and use new models
-- [x] Update api/polls/index.js to remove connection and use new models
-- [x] Update api/polls/my.js to remove connection and use new models
-- [x] Update api/polls/[id].js to remove connection and use new models
-- [x] Update api/polls/[id]/vote.js to remove connection and use new models
-- [x] Update routes/auth.js to use new models
-- [x] Update routes/polls.js to use new models
-
-## Followup
-- [ ] Run npm install
-- [ ] Test the backend
+## Tasks
+- [x] Install mongoose dependency
+- [x] Create .env file with MONGO_URI
+- [x] Update src/server.js to establish MongoDB connection
+- [x] Convert models/User.js to mongoose schema
+- [x] Convert models/Poll.js to mongoose schema
+- [x] Update test-db.js to test MongoDB connection
+- [x] Run npm install
+- [x] Execute test script to verify connection
+- [x] Start server to ensure everything works

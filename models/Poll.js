@@ -1,54 +1,74 @@
-class Poll {
-  constructor(question, options, creator, isPublic = false) {
-    this.id = Date.now().toString(); // Simple ID generation
-    this.question = question;
-    this.options = options.map(option => ({ text: option, votes: 0 }));
-    this.creator = creator;
-    this.isPublic = isPublic;
-    this.voters = [];
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
+const mongoose = require('mongoose');
 
-  save() {
-    Poll.polls.push(this);
-    return this;
-  }
-
-  static findById(id) {
-    return Poll.polls.find(poll => poll.id === id);
-  }
-
-  static find(query = {}) {
-    return Poll.polls.filter(poll => {
-      for (const key in query) {
-        if (poll[key] !== query[key]) return false;
-      }
-      return true;
-    });
-  }
-
-  static updateVotes(pollId, optionIndex, userId) {
-    const poll = Poll.findById(pollId);
-    if (!poll) return null;
-
-    // Check if user already voted
-    const existingVote = poll.voters.find(v => v.user === userId);
-    if (existingVote) {
-      // Decrement previous vote count
-      poll.options[existingVote.optionIndex].votes--;
-      // Update vote
-      existingVote.optionIndex = optionIndex;
-    } else {
-      poll.voters.push({ user: userId, optionIndex });
+const pollSchema = new mongoose.Schema({
+  question: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  options: [{
+    text: {
+      type: String,
+      required: true
+    },
+    votes: {
+      type: Number,
+      default: 0
     }
-    // Increment new vote count
-    poll.options[optionIndex].votes++;
-    poll.updatedAt = new Date();
-    return poll;
+  }],
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  isPublic: {
+    type: Boolean,
+    default: false
+  },
+  voters: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    optionIndex: Number
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
-}
+});
 
-Poll.polls = [];
+// Update updatedAt on save
+pollSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
 
-module.exports = Poll;
+// Static method to update votes
+pollSchema.statics.updateVotes = async function(pollId, optionIndex, userId) {
+  const poll = await this.findById(pollId);
+  if (!poll) return null;
+
+  // Check if user already voted
+  const existingVoteIndex = poll.voters.findIndex(v => v.user.toString() === userId);
+  if (existingVoteIndex !== -1) {
+    // Decrement previous vote count
+    const prevOptionIndex = poll.voters[existingVoteIndex].optionIndex;
+    poll.options[prevOptionIndex].votes--;
+    // Update vote
+    poll.voters[existingVoteIndex].optionIndex = optionIndex;
+  } else {
+    poll.voters.push({ user: userId, optionIndex });
+  }
+  // Increment new vote count
+  poll.options[optionIndex].votes++;
+  poll.updatedAt = new Date();
+  await poll.save();
+  return poll;
+};
+
+module.exports = mongoose.model('Poll', pollSchema);
