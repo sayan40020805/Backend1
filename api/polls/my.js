@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
     const user = await auth(req);
     req.user = user;
 
-    const polls = Poll.find({ creator: req.user.id });
+    const polls = await Poll.find({ creator: req.user._id });
     res.json(polls);
   } catch (error) {
     if (error.message === 'Please authenticate') {

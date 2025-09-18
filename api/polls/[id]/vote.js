@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
 
     const { id } = req.query;
     const { optionIndex } = req.body;
-    const poll = Poll.updateVotes(id, optionIndex, req.user.id);
+    const poll = await Poll.updateVotes(id, optionIndex, req.user._id);
     if (!poll) {
       return res.status(404).json({ message: 'Poll not found' });
     }

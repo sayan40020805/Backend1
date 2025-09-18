@@ -32,6 +32,10 @@ const pollSchema = new mongoose.Schema({
     },
     optionIndex: Number
   }],
+  slug: {
+    type: String,
+    unique: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -42,8 +46,11 @@ const pollSchema = new mongoose.Schema({
   }
 });
 
-// Update updatedAt on save
+// Generate slug before saving
 pollSchema.pre('save', function(next) {
+  if (!this.slug) {
+    this.slug = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
   this.updatedAt = Date.now();
   next();
 });

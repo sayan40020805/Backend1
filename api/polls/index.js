@@ -52,7 +52,12 @@ module.exports = async (req, res) => {
     req.user = user;
 
     const { question, options, isPublic } = req.body;
-    const poll = new Poll(question, options, req.user.id, isPublic || false);
+    const poll = new Poll({
+      question,
+      options: options.map(opt => ({ text: opt, votes: 0 })),
+      creator: req.user._id,
+      isPublic: isPublic || false
+    });
     await poll.save();
     res.status(201).json(poll);
   } catch (error) {

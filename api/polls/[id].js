@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
       // Get poll by id
-      const poll = Poll.findById(id);
+      const poll = await Poll.findById(id);
       if (!poll) {
         return res.status(404).json({ message: 'Poll not found' });
       }
@@ -54,14 +54,14 @@ module.exports = async (req, res) => {
       const user = await auth(req);
       req.user = user;
 
-      const poll = Poll.findById(id);
+      const poll = await Poll.findById(id);
       if (!poll) {
         return res.status(404).json({ message: 'Poll not found' });
       }
-      if (poll.creator !== req.user.id) {
+      if (poll.creator.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: 'Not authorized to delete this poll' });
       }
-      Poll.polls = Poll.polls.filter(p => p.id !== id);
+      await poll.deleteOne();
       res.json({ message: 'Poll deleted' });
     } else {
       res.setHeader('Allow', 'GET, DELETE');
