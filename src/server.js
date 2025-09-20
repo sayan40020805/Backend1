@@ -18,14 +18,15 @@ const io = new Server(server, {
 
       const allowedOrigins = process.env.ALLOWED_ORIGINS
         ? process.env.ALLOWED_ORIGINS.split(',')
-        : ['http://localhost:3000'];
+        : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5174'];
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // In development, allow localhost with any port
-      if (process.env.NODE_ENV !== 'production' && origin.includes('localhost')) {
+      // In development, allow localhost and 127.0.0.1 with any port
+      if (process.env.NODE_ENV !== 'production' &&
+          (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
         return callback(null, true);
       }
 
@@ -36,7 +37,29 @@ const io = new Server(server, {
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5174'];
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // In development, allow localhost and 127.0.0.1 with any port
+    if (process.env.NODE_ENV !== 'production' &&
+        (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Connect to MongoDB
