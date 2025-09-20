@@ -134,7 +134,13 @@ app.get('/api/polls/:id/share', (req, res) => {
   if (!poll.isPublic) {
     return res.status(403).json({ message: 'Poll is not public' });
   }
-  const shareUrl = `http://localhost:${PORT}/api/polls/public/${poll.shareId}`;
+
+  // Use production URL if in production, otherwise use development URL
+  const backendUrl = process.env.NODE_ENV === 'production'
+    ? process.env.PRODUCTION_BACKEND_URL || `https://your-backend-domain.com:${PORT}`
+    : `http://localhost:${PORT}`;
+
+  const shareUrl = `${backendUrl}/api/polls/public/${poll.shareId}`;
   res.json({ shareUrl });
 });
 

@@ -1,20 +1,19 @@
-# TODO: Fix Polls Always Private Issue
+# Quick Polls App - Deployment Fixes
 
-## Backend Fixes
-- [x] Fix poll creation in api/polls/index.js: Use correct Mongoose constructor
-- [x] Fix poll fetching in api/polls/my.js: Add await to Poll.find
-- [x] Fix api/polls/[id].js: Add awaits, fix creator comparison, use poll.delete()
-- [x] Fix api/polls/[id]/vote.js: Add await to Poll.updateVotes
-- [x] Ensure isPublic is properly set when creating polls
-- [x] Add unique slug or link generation for polls
+## Issues to Fix:
+1. [x] Fix hardcoded localhost URLs in share URL generation
+2. [x] Improve Socket.io CORS configuration for production
+3. [x] Add environment variables for production deployment
+4. [x] Update both main server and mock server files
 
-## Testing
-- [ ] Test poll creation with isPublic=true
-- [ ] Test poll fetching for authenticated user
-- [ ] Test poll deletion
-- [ ] Test voting on polls
-- [ ] Verify public polls are accessible without auth via /api/polls/public/:slug
+## Files to Modify:
+- [x] routes/polls.js - Fix hardcoded frontend URL
+- [x] updated-server.js - Fix hardcoded backend URL
+- [x] src/server.js - Improve Socket.io CORS configuration
+- [x] .env.example - Add missing environment variables
 
-## Frontend Verification
-- [ ] Confirm PollContext.jsx sends isPublic correctly
-- [ ] Confirm MyPollsPage.jsx filters polls correctly
+## Testing Checklist:
+- [ ] Test locally with environment variables
+- [ ] Verify share URLs work correctly
+- [ ] Confirm Socket.io connections work
+- [ ] Test deployment with production URLs

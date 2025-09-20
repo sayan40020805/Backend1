@@ -105,7 +105,13 @@ router.get('/:id/share', auth, async (req, res) => {
     if (poll.creator.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-    const shareUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/poll/${poll.slug}`;
+
+    // Use production URL if in production, otherwise use development URL
+    const frontendUrl = process.env.NODE_ENV === 'production'
+      ? process.env.PRODUCTION_FRONTEND_URL
+      : process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    const shareUrl = `${frontendUrl}/poll/${poll.slug}`;
     res.json({ shareUrl });
   } catch (error) {
     res.status(500).json({ message: error.message });
